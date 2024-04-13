@@ -1,6 +1,6 @@
 // src/pages/_app.js
 import '../styles/globals.css'; // グローバル CSS
-import RootLayout from '../components/RootLayout'; // 適切なパスに修正してください
+import RootLayout from '../components/RootLayout'; 
 
 export default function MyApp({ Component, pageProps }) {
   return (
