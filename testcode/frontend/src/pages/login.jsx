@@ -1,35 +1,35 @@
-'use client'
-
 import { useState } from 'react';
 import Link from 'next/link';
 
 export default function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [message, setMessage] = useState('');
   const [user, setUser] = useState(null);
+  const [message, setMessage] = useState('');
+  const [showModal, setShowModal] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
     try {
-      const res = await fetch('http://127.0.0.1:5000/employee');
-      if (!res.ok) throw new Error(res.statusText);
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!res.ok) throw new Error(await res.json().then(data => data.error));
 
       const data = await res.json();
-      const employee = data.employee.find((emp) =>
-        emp.detail.some((d) => d.email === email && d.password === password)
-      );
-
-      if (employee) {
-        setUser(employee.detail[0].name);
-        setMessage('');
-      } else {
-        setUser(null);
-        setMessage('データが一致しません');
-      }
+      setUser(data.employee_name);
+      setMessage('');
+      setShowModal(true);
+      
     } catch (error) {
-      console.error('Failed to fetch data:', error);
-      setMessage('データの取得に失敗しました');
+      console.error('Login failed:', error);
+      setMessage('ログインに失敗しました');
+      setShowModal(false);
     }
   }
 
@@ -56,20 +56,25 @@ export default function LoginForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            autoComplete="current-password"
           />
         </div>
-        <button type="submit" className="btn btn-primary">Login</button>
+        <button type="submit" className="btn btn-primary">ログイン</button>
       </form>
-      
-      {message && <p className="mt-2 text-sm text-red-500">{message}</p>}
-      {user && (
-        <div className="mt-2 text-sm text-gray-900">
-          <p>ようこそ、{user}さん</p>
-          <Link href="/weekly" className="link link-primary">Your Weekly Page</Link>
 
+      {showModal && (
+        <div className="modal modal-open">
+          <div className="modal-box">
+            <h3 className="font-bold text-lg">ようこそ、{user}さん</h3>
+            <p className="py-4">Weekly Reportへ進んでください。</p>
+            <div className="modal-action font-bold text-lg">
+              <Link href="/weekly">Weekly Report Page</Link>
+              <a href="#" className="btn" onClick={() => setShowModal(false)}>閉じる</a>
+            </div>
+          </div>
         </div>
       )}
+
+      {message && <p className="mt-2 text-sm text-red-500">{message}</p>}
     </div>
   );
 }

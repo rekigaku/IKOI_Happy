@@ -11,7 +11,7 @@ export default function Home({ posts }) {
       <h1 className="text-5xl font-bold">Welcome to IKOI</h1>
       <p className="py-10 text1-2xl">"Peace begins with a smile." -Mother Teresa</p>
       
-      <Link href="/app/others/login" passHref>
+      <Link href="/login" passHref>
       <button className="btn btn-active btn-primary text-lg mr-7">Get Started</button>
       </Link>
       

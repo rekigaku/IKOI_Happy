@@ -15,7 +15,7 @@ class Base(DeclarativeBase):
 #employees_master tableの定義
 class Employees(Base):
     __tablename__ = 'employees_master'
-    employee_id:Mapped[int] = mapped_column(primary_key=True)
+    employee_id:Mapped[str] = mapped_column(primary_key=True)
     employee_pw:Mapped[str] = mapped_column()
     employee_name:Mapped[str] = mapped_column()
     email:Mapped[str] = mapped_column()
@@ -24,13 +24,13 @@ class Employees(Base):
 #positions_master tableの定義
 class Positions(Base):
     __tablename__ = 'positions_master'
-    position_id:Mapped[int] = mapped_column(primary_key=True)
+    position_id:Mapped[str] = mapped_column(primary_key=True)
     position_name:Mapped[str] = mapped_column()
 
 #records tableの定義
 class Records(Base):
     __tablename__ = 'records'
-    record_id:Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    record_id:Mapped[str] = mapped_column(primary_key=True, autoincrement=True)
     employee_id:Mapped[int] = mapped_column(ForeignKey("employees_master.employee_id"))
     record_date:Mapped[date] = mapped_column(Date)
     action_id:Mapped[int] = mapped_column(ForeignKey("actions_master.action_id"))
@@ -38,13 +38,13 @@ class Records(Base):
 #actions_master tableの定義
 class Actions(Base):
     __tablename__ = 'actions_master'
-    action_id:Mapped[int] = mapped_column(primary_key=True)
+    action_id:Mapped[str] = mapped_column(primary_key=True)
     action_name:Mapped[str] = mapped_column()
     action_category_id:Mapped[int] = mapped_column(ForeignKey("action_categories_master.action_category_id"))
 
 #action_categories_master tableの定義
 class Categories(Base):
     __tablename__ = 'action_categories_master'
-    action_category_id:Mapped[int] = mapped_column(primary_key=True)
+    action_category_id:Mapped[str] = mapped_column(primary_key=True)
     action_category_name:Mapped[str] = mapped_column()
     position_id : Mapped[int] = mapped_column(ForeignKey("positions_master.position_id"))

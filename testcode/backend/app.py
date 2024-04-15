@@ -5,6 +5,7 @@ import requests
 from db_control import mymodels, crud
 from datetime import datetime
 
+
 # Flaskアプリのインスタンスを生成。CORSによって、異なるドメインからのappへのリクエストを許可。
 app = Flask(__name__)
 CORS(app)
@@ -77,7 +78,25 @@ def add_records():
         }
         # 登録関数の呼び出し(crud.pyに記載の関数add_new_recordを、mymodels.pyに記載のRecordsテーブルに対して実行する。必要な引数も渡す。)
         crud.add_new_record(mymodels.Records, values)
-    return "All records inserted"
+    return jsonify({"message":"All records inserted"}), 200
+
+#ログイン画面接続用のAPI　POSTで設定　///山脇追加分
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    email = data.get('email')
+    password = data.get('password')
+
+    if not email or not password:
+        return jsonify({"error": "Missing email or password"}), 400
+    
+    employee = crud.validate_employee_login(email, password)
+    if employee:
+        # パスワードフィールドは返さない
+        return jsonify({"employee_id": employee.employee_id, "employee_name": employee.employee_name, "email": employee.email}), 200
+    else:
+        return jsonify({"error": "Invalid email or password"}), 401
+
 
 
 # frontend側のfetchtest用のAPI。jsonplaceholderというサービスを利用。

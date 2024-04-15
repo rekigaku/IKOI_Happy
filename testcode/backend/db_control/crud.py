@@ -120,4 +120,25 @@ def add_new_record(record_model, values):
         return "An unexpected error occurred."
     finally:
         # セッションを閉じる
+        session.close()        
+
+# メールアドレスとパスワードを検証する関数 ////// 山脇追加
+def validate_employee_login(email, password):
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    
+    try:
+        # メールアドレスで従業員を検索
+        employee = session.query(Employees).filter(Employees.email == email).one()
+        # パスワードが一致するか確認
+        if employee and employee.employee_pw == password:
+            return employee
+        else:
+            return None
+    except NoResultFound:
+        return None
+    except Exception as e:
+        print("Error during login validation: ", str(e))
+        return None
+    finally:
         session.close()

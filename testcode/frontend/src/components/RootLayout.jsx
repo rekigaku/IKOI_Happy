@@ -22,7 +22,7 @@ export default function RootLayout({ children }) {
           </div>
         </div>
         <div className="navbar-end">
-          <Link href="/report" passHref>
+          <Link href="/record-entry" passHref>
             <button className="btn text-lg mr-7">記録する</button>
           </Link>
           <Link href="/weekly" passHref>
