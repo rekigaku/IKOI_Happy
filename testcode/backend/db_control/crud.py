@@ -142,3 +142,37 @@ def validate_employee_login(email, password):
         return None
     finally:
         session.close()
+        
+# 従業員のposition_idに基づいてアクションカテゴリを検索し、それに基づいてアクションを取得するロジックの追加/////山脇追加
+def get_actions_by_employee_position(employee_id):
+    Session = sessionmaker(bind=engine)
+    session = Session()
+
+    try:
+        # 従業員の position_id を取得
+        employee_position = session.query(Employees.position_id).filter(Employees.employee_id == employee_id).one_or_none()
+        if employee_position is None:
+            return json.dumps({"error": "Employee not found"}), 404
+
+        # position_id に基づいてアクションカテゴリーを取得
+        categories = session.query(Categories).filter(Categories.position_id == employee_position.position_id).all()
+
+        # アクションカテゴリーに基づいてアクションを取得
+        actions_list = []
+        for category in categories:
+            actions = session.query(Actions).filter(Actions.action_category_id == category.action_category_id).all()
+            actions_list.extend([{
+                "action_id": action.action_id,
+                "action_name": action.action_name
+            } for action in actions])
+
+        result_json = json.dumps(actions_list, ensure_ascii=False)
+        return result_json, 200
+
+    except NoResultFound:
+        return json.dumps({"error": "No actions found"}), 404
+    except DBAPIError as e:
+        return json.dumps({"error": str(e)}), 500
+    finally:
+        # セッションを閉じる
+        session.close()

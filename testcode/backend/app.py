@@ -16,7 +16,8 @@ def index():
     return "WELCOME to IKOI app"
 
 # employee_idとrecord_dateの期間を指定することで、特定の人、期間のrecordsデータを返すAPI
-@app.route('/get_records', methods=['POST'])
+# 山脇変更　get_records ⇒　get_filterd_recordsに変更
+@app.route('/get_filtered_records', methods=['POST'])
 def get_records():
     if not request.is_json:
         return jsonify({"error": "Request must be JSON"}), 400
@@ -24,7 +25,7 @@ def get_records():
     values = request.get_json()
 
     try:
-        employee_id = int(values['employee_id'])  # 整数への変換を試みる
+        employee_id = values['employee_id']  # 文字列のまま使用
         from_date = datetime.strptime(values['from_date'], '%Y-%m-%d')
         to_date = datetime.strptime(values['to_date'], '%Y-%m-%d')
     except KeyError as e:
@@ -36,10 +37,11 @@ def get_records():
     if result:
         return jsonify(result), 200
     else:
-        return jsonify({'error': 'No records found'}), 404
+        return jsonify({'error': 'No records found for the provided employee ID and date range'}), 404
 
 # employee_idを指定することで、特定の人に表示すべきactionsデータを返すAPI
-@app.route('/get_action_data', methods=['POST'])
+#山脇変更　get_action_date ⇒　
+@app.route('/get_filtered_actions', methods=['POST'])
 def get_action_data():
     if not request.is_json:
         return jsonify({"error": "Request body must be JSON"}), 400
@@ -50,10 +52,11 @@ def get_action_data():
     if employee_id is None:
         return jsonify({"error": "Missing employee_id"}), 400
 
-    try:
-        employee_id = int(employee_id)  # 整数への変換を確実に行う
-    except ValueError:
-        return jsonify({"error": "employee_id must be an integer"}), 400
+    # この部分を修正: employee_idを整数に変換するのではなく、文字列のまま使用
+    # try:
+    #     employee_id = int(employee_id)  # 整数への変換を試みる
+    # except ValueError:
+    #     return jsonify({"error": "employee_id must be an integer"}), 400
 
     try:
         result = crud.get_filtered_actions(employee_id)
@@ -63,8 +66,9 @@ def get_action_data():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
 # employee_idとrecord_dateとaction_idを渡すことで、recordsテーブルにデータを追加するAPI
-@app.route('/add_records', methods=['POST'])
+@app.route('/add_new_record', methods=['POST'])
 def add_records():
     # frontendからJSON形式で以下の情報を受け取る。
     data = request.get_json()
